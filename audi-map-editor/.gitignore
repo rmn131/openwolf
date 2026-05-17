@@ -1,0 +1,10 @@
+.venv/
+build/
+dist/
+*.spec.bak
+__pycache__/
+*.pyc
+samples/*.ori
+samples/*.bin
+samples/*.frf
+*.ame.json.bak

@@ -1,0 +1,45 @@
+name: Build Audi EDC17 map editor (Windows .exe)
+
+on:
+  push:
+    branches:
+      - claude/audi-map-editor-Zoy7m
+    paths:
+      - audi-map-editor/**
+      - .github/workflows/build-audi-map-editor.yml
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: audi-map-editor
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          python -m pip install -r requirements.txt pyinstaller
+
+      - name: Build .exe
+        run: pyinstaller --noconfirm audi-map-editor.spec
+
+      - name: Zip distribution
+        shell: pwsh
+        run: |
+          Compress-Archive -Path dist/audi-map-editor/* `
+            -DestinationPath dist/audi-map-editor-windows.zip -Force
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: audi-map-editor-windows
+          path: audi-map-editor/dist/audi-map-editor-windows.zip
+          if-no-files-found: error
+          retention-days: 30
